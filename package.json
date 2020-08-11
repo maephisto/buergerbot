@@ -4,12 +4,15 @@
   "description": "a bot that checks when a burgeramt termin is available and notifies you",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.19.2",
     "cheerio": "^0.20.0",
-    "request": "^2.72.0"
+    "puppeteer": "^5.2.1",
+    "set-interval-async": "^1.0.33"
   }
 }
