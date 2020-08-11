@@ -4,6 +4,7 @@
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const { setIntervalAsync } = require('set-interval-async/dynamic');
+const beep = require('beepbeep');
 
 // config of request url params
 
@@ -43,6 +44,8 @@ const checkForAvailableAppointment = async () => {
       let month = $(this).parentsUntil('th.month').text();
 
       console.info('!!!! OPEN BOOKING ON %s %s ! Go, go, go!', day, month);
+      console.info(url);
+      beep(10, 1500);
     });
   } else {
     console.debug('> No available appointments found')
