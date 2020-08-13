@@ -6,11 +6,9 @@ const cheerio = require('cheerio');
 const { setIntervalAsync } = require('set-interval-async/dynamic');
 const beep = require('beepbeep');
 
-// config of request url params
-
+// config of request url params > [note] adapt to your needs
 const policeClearanceCertificateId = 120926;
-const serviceId = policeClearanceCertificateId;
-
+const serviceId = policeClearanceCertificateId; // [note] assign the service id here
 const baseUrl = 'https://service.berlin.de';
 const path = '/terminvereinbarung/termin/tag.php';
 const providerList = [122210, 122217,122219,122227,122231,122238,122243,122252,122260,122262,122254,122271,122273,
@@ -19,40 +17,49 @@ const providerList = [122210, 122217,122219,122227,122231,122238,122243,122252,1
 const urlParams = [
   'termin=1',
   `anliegen[]=${serviceId}`,
-  `dienstleisterlist=${providerList.join(',')}`,
+  `dienstleisterlist=${providerList.join()}`,
   'herkunft=http%3A%2F%2Fservice.berlin.de%2Fdienstleistung%2F120926%2F'
 ];
 
 const checkForAvailableAppointment = async () => {
   console.log('> checking for appointments...');
+
+  // the url to be crawled > [note] adapt to your needs
   const url = `${baseUrl}${path}?${urlParams.join('&')}`;
 
+  // get html data of the page
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(url);
   const html = await page.content();
   await browser.close();
 
+  // parse html to jQuery-like object using cheerio
   const $ = cheerio.load(html);
 
+  // parse cells for available days from table
   const $availableTerminList = $('.calendar-month-table:first-child td.buchbar a');
 
+  // log and alert when availability given
   if ($availableTerminList.length > 0) {
+    console.info('OPEN BOOKINGS!! Go, go, gooooooo!!!!');
+
+    // print dates
     $availableTerminList.each(_ => {
-      // we have an open booking
       let day = $(this).text();
       let month = $(this).parentsUntil('th.month').text();
-
-      console.info('!!!! OPEN BOOKING ON %s %s ! Go, go, go!', day, month);
-      console.info(url);
-      beep(10, 1500);
+      console.info('...AVAILABLE ON %s %s', day, month);
     });
+
+    // play sound
+    beep(10, 1500);
   } else {
-    console.debug('> No available appointments found')
+    console.info('> No available appointments found')
   }
 
 };
 
-console.info('~> 🐒 Starting script');
+console.log('~> 🐒 Starting script');
 checkForAvailableAppointment();
-setIntervalAsync(checkForAvailableAppointment, 20000);
+// repeat every 30 seconds
+setIntervalAsync(checkForAvailableAppointment, 30000);
