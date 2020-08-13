@@ -7,7 +7,8 @@ const { setIntervalAsync } = require('set-interval-async/dynamic');
 const beep = require('beepbeep');
 
 // config of request url params > [note] adapt to your needs
-const policeClearanceCertificateId = 120926;
+const policeClearanceCertificateId = 120926; // 'Polizeiliches Führungszeugnis'
+const registrationOfAccomodation = 120686; // 'Anmeldung einer Wohnung'
 const serviceId = policeClearanceCertificateId; // [note] assign the service id here
 const baseUrl = 'https://service.berlin.de';
 const path = '/terminvereinbarung/termin/tag.php';
@@ -18,7 +19,7 @@ const urlParams = [
   'termin=1',
   `anliegen[]=${serviceId}`,
   `dienstleisterlist=${providerList.join()}`,
-  'herkunft=http%3A%2F%2Fservice.berlin.de%2Fdienstleistung%2F120926%2F'
+  `herkunft=http%3A%2F%2Fservice.berlin.de%2Fdienstleistung%2F${serviceID}%2F`
 ];
 
 const checkForAvailableAppointment = async () => {
