@@ -1,6 +1,7 @@
 'use strict';
 
 // includes
+const open = require('open');
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const { setIntervalAsync } = require('set-interval-async/dynamic');
@@ -10,6 +11,7 @@ const beep = require('beepbeep');
 const policeClearanceCertificateId = 120926; // 'Polizeiliches Führungszeugnis'
 const registrationOfAccomodation = 120686; // 'Anmeldung einer Wohnung'
 const motionOfIdentityCard = 120686; // 'Personalausweis beantragen'
+const motionOfPassport = 120686; // 'Reisepass beantragen'
 const serviceId = motionOfIdentityCard; // [note] assign the service id here
 const baseUrl = 'https://service.berlin.de';
 const path = '/terminvereinbarung/termin/tag.php';
@@ -47,10 +49,16 @@ const checkForAvailableAppointment = async () => {
     console.info('OPEN BOOKINGS!! Go, go, gooooooo!!!!');
 
     // print dates
-    $availableTerminList.each(_ => {
-      let day = $(this).text();
-      let month = $(this).parentsUntil('th.month').text();
+    $availableTerminList.each(async _ => {
+      // log details
+      const day = $(this).text();
+      const month = $(this).parentsUntil('th.month').text();
       console.info('...AVAILABLE ON %s %s', day, month);
+
+      // get url and open in browser
+      const pathOfBooking = $(this).attr('href');
+      const linkOfBooking = new URL(pathOfBooking, baseUrl).toString();
+      await open(linkOfBooking);
     });
 
     // play sound
@@ -65,3 +73,5 @@ console.log('~> 🐒 Starting script');
 checkForAvailableAppointment();
 // repeat every 30 seconds
 setIntervalAsync(checkForAvailableAppointment, 30000);
+
+// https://service.berlin.de/terminvereinbarung/termin/time/1663624800/
